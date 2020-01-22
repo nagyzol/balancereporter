@@ -7,11 +7,12 @@ namespace BalanceReporter.Core.Services
 {
     public class BalanceReportGenerator : IBalanceReportGenerator
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         public BalanceReport Generate(Account account, DateTime requestDate)
         {
             if (account == null)
             {
-                //todo: log
+                Logger.Error("Account can't be null");
                 throw new ArgumentNullException(nameof(account));
             }
 
@@ -39,7 +40,7 @@ namespace BalanceReporter.Core.Services
                                                     if (t.Key < requestDate.TrimDateTimeToYearMonthDay()) totalDebit += (decimal)a.Amount;
                                                     return a.Amount;
                                                 default:
-                                                    //todo: log
+                                                    Logger.Error($"Invalid CreditDebitIndicator: {a.CreditDebitIndicator} at {a}");
                                                     throw new InvalidOperationException($"Invalid CreditDebitIndicator: {a.CreditDebitIndicator} at {a}");
                                             }
                                         })
@@ -55,30 +56,3 @@ namespace BalanceReporter.Core.Services
         }
     }
 }
-
-
-
-//var balances = account.Transactions
-//    .Where(t => t.Status == Transaction.State.Booked && t.BookingDate.TrimDateTimeToYearMonthDay() <= requestDate)
-//    .GroupBy(t => t.BookingDate.TrimDateTimeToYearMonthDay(),
-//                t => {
-//                    switch (t.CreditDebitIndicator)
-//                    {
-//                        case CreditDebitIndicator.Credit:
-//                            totalCredit += (decimal)t.Amount;
-//                            return -t.Amount;
-//                        case CreditDebitIndicator.Debit:
-//                            totalDebit += (decimal)t.Amount;
-//                            return t.Amount;
-//                        default:
-//                                        //todo: log
-//                                        throw new InvalidOperationException($"Invalid CreditDebitIndicator: {t.CreditDebitIndicator} at {t}");
-//                    }
-//                })
-//    .OrderBy(t => t.Key)
-//    .Select(t =>
-//    {
-//        var balance = new BalanceReport.EndOfTheDayBalance { Date = t.Key, Balance = t.Sum(a => (decimal)a) };
-//        (balance.Balance, tempBalance) = (tempBalance, tempBalance + balance.Balance);
-//        return balance;
-//    }).ToList();

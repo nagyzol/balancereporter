@@ -1,22 +1,25 @@
-﻿using BalanceReporter.Data;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
+
+using BalanceReporter.Data;
+using Newtonsoft.Json;
 
 namespace BalanceReporter.Core.Parsers
 {
     public class AccountRequestParser : IAccountRequestParser
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         public AccountBalanceRequest GetAccountBalanceRequestFromFile(string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
             {
-                //todo: log
+                Logger.Error("File path is null");
                 throw new ArgumentNullException(nameof(filePath));
             }
             if (!File.Exists(filePath))
             {
-                //todo: log
+                Logger.Error($"File doesn't exists {filePath}");
                 throw new ArgumentException($"File doesn't exists {filePath}");
             }
 
@@ -30,7 +33,7 @@ namespace BalanceReporter.Core.Parsers
             }
             catch(Exception e)
             {
-                //todo: log
+                Logger.Error(e, $"Can't read file {filePath}");
                 throw new InvalidOperationException($"Can't read file {filePath}", e);
             }
         }
@@ -44,7 +47,7 @@ namespace BalanceReporter.Core.Parsers
             }
             catch(Exception e)
             {
-                //todo: log exception
+                Logger.Error(e, $"Can't parse json: {inputJson}");
                 throw new InvalidOperationException($"Can't parse json: {inputJson}", e);
             }
         }

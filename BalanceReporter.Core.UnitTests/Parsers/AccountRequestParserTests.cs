@@ -70,7 +70,7 @@ namespace BalanceReporter.Core.UnitTests.Parsers
             Assert.That(result.DataSourceName, Is.EqualTo(expected.DataSourceName));
             Assert.That(result.RequestDate, Is.EqualTo(expected.RequestDate));
             Assert.That(result.Accounts.Count, Is.EqualTo(expected.Accounts.Count));
-            //todo: rest of the compersion
+            //...
         }
 
         #region TestCaseSources

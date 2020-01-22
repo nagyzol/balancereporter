@@ -8,6 +8,7 @@ namespace BalanceReporter.Core.Services
 {
     public class BalanceReporterService : IReporterService<AccountBalanceRequest, BalanceReport>
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly IAccountRequestParser accountRequestParser;
         private readonly IReportGenerator<BalanceReport> reportGenerator;
         private readonly IReportRequestValidator<AccountBalanceRequest> validator;
@@ -24,7 +25,7 @@ namespace BalanceReporter.Core.Services
         {
             if (string.IsNullOrWhiteSpace(filePath))
             {
-                //todo: log
+                Logger.Error("File path can't be null.");
                 throw new ArgumentNullException(nameof(filePath));
             }
             var request = accountRequestParser.GetAccountBalanceRequestFromFile(filePath);
@@ -35,7 +36,7 @@ namespace BalanceReporter.Core.Services
         {
             if (string.IsNullOrWhiteSpace(jsonInput))
             {
-                //todo: log
+                Logger.Error("Json input is null");
                 throw new ArgumentNullException(nameof(jsonInput));
             }
 
@@ -47,7 +48,7 @@ namespace BalanceReporter.Core.Services
         {
             if (!validator.IsValid(request, out string reason))
             {
-                //todo log
+                Logger.Error($"Can't generate report from {request} because of the following reason: {reason}");
                 throw new InvalidOperationException($"Can't generate report from {request} because of the following reason: {reason}");
             }
 
